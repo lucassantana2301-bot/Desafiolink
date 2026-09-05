@@ -2,24 +2,30 @@
   "models": [
     {
       "id": "human-head-gltf",
-      "name": "Human Anatomical Head (Future Asset)",
-      "path": "/models/humanHead.glb",
+      "name": "NEXUS State 01 - Human Anatomical Head GLB",
+      "path": "/models/nexus/humanHead.glb",
       "format": "gltf-draco",
-      "type": "future-asset"
+      "type": "character-model",
+      "status": "pending",
+      "budgetTris": 80000
     },
     {
       "id": "hybrid-head-gltf",
-      "name": "Biomechanical Hybrid Head (Future Asset)",
-      "path": "/models/hybridHead.glb",
+      "name": "NEXUS State 03 - Biomechanical Hybrid Head GLB",
+      "path": "/models/nexus/hybridHead.glb",
       "format": "gltf-draco",
-      "type": "future-asset"
+      "type": "character-model",
+      "status": "pending",
+      "budgetTris": 120000
     },
     {
       "id": "android-head-gltf",
-      "name": "Android Core Chassis (Future Asset)",
-      "path": "/models/androidHead.glb",
+      "name": "NEXUS State 04 - Android Structure Core GLB",
+      "path": "/models/nexus/androidHead.glb",
       "format": "gltf-draco",
-      "type": "future-asset"
+      "type": "character-model",
+      "status": "pending",
+      "budgetTris": 150000
     }
   ],
   "textures": [

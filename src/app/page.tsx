@@ -5,6 +5,7 @@ import SmoothScroll from '@/components/motion/SmoothScroll';
 import Navbar from '@/components/ui/Navbar';
 import HeroOverlay from '@/components/ui/HeroOverlay';
 import LoadingOverlay from '@/components/ui/LoadingOverlay';
+import DebugHUD from '@/components/ui/DebugHUD';
 
 // Dynamic import for WebGL Canvas with SSR disabled
 const SceneCanvas = dynamic(() => import('@/components/three/SceneCanvas'), {
@@ -23,6 +24,9 @@ export default function Home() {
       {/* 2D HUD Navigation and Narrative Telemetry */}
       <Navbar />
       <HeroOverlay />
+
+      {/* Discrete 3D Telemetry Debug HUD (?debug3d=1) */}
+      <DebugHUD />
 
       {/* ~600vh Cinematic Scroll Timeline Container for GSAP ScrollTrigger */}
       <SmoothScroll>
