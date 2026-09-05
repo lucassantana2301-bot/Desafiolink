@@ -1,23 +1,24 @@
-/* eslint-disable react-hooks/immutability */
 'use client';
 
+import { useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useStore } from '@/store/useStore';
 import { SCENES } from '@/data/scenes';
 
-// Reusable static vector objects outside render loop (Fix 02 - Avoids memory allocation per frame)
-const tempPos = new THREE.Vector3();
-const tempTarget = new THREE.Vector3();
-const currentPos = new THREE.Vector3();
-const nextPos = new THREE.Vector3();
-const currentLookAt = new THREE.Vector3();
-const nextLookAt = new THREE.Vector3();
-const interpolatedPos = new THREE.Vector3();
-const interpolatedLookAt = new THREE.Vector3();
-
 export default function CameraRig() {
   const { camera } = useThree();
+
+  // Component instance vector references (Fix F - Prevents global module scope mutable state)
+  const tempPos = useRef(new THREE.Vector3());
+  const tempTarget = useRef(new THREE.Vector3());
+  const currentPos = useRef(new THREE.Vector3());
+  const nextPos = useRef(new THREE.Vector3());
+  const currentLookAt = useRef(new THREE.Vector3());
+  const nextLookAt = useRef(new THREE.Vector3());
+  const interpolatedPos = useRef(new THREE.Vector3());
+  const interpolatedLookAt = useRef(new THREE.Vector3());
+  const perspectiveCamRef = useRef<THREE.PerspectiveCamera | null>(null);
 
   useFrame((state, delta) => {
     const scrollProgress = useStore.getState().scrollProgress;
@@ -49,20 +50,20 @@ export default function CameraRig() {
     const localT = THREE.MathUtils.clamp((scrollProgress - rangeStart) / rangeSpan, 0, 1);
 
     // 3. Set current & next target vectors
-    currentPos.set(...currentScene.cameraPosition);
-    nextPos.set(...nextScene.cameraPosition);
+    currentPos.current.set(...currentScene.cameraPosition);
+    nextPos.current.set(...nextScene.cameraPosition);
 
     const currentTargetArr = currentScene.cameraTarget || [0, 0, 0];
     const nextTargetArr = nextScene.cameraTarget || [0, 0, 0];
-    currentLookAt.set(...currentTargetArr);
-    nextLookAt.set(...nextTargetArr);
+    currentLookAt.current.set(...currentTargetArr);
+    nextLookAt.current.set(...nextTargetArr);
 
     // 4. Interpolate Position, FOV, and Target between current & next waypoints
-    interpolatedPos.lerpVectors(currentPos, nextPos, localT);
-    interpolatedPos.x += mouseX;
-    interpolatedPos.y += mouseY;
+    interpolatedPos.current.lerpVectors(currentPos.current, nextPos.current, localT);
+    interpolatedPos.current.x += mouseX;
+    interpolatedPos.current.y += mouseY;
 
-    interpolatedLookAt.lerpVectors(currentLookAt, nextLookAt, localT);
+    interpolatedLookAt.current.lerpVectors(currentLookAt.current, nextLookAt.current, localT);
 
     const interpolatedFov = THREE.MathUtils.lerp(
       currentScene.cameraFov,
@@ -70,19 +71,20 @@ export default function CameraRig() {
       localT
     );
 
-    // 5. Framerate-independent smooth damp lerp (Fix 02)
+    // 5. Framerate-independent smooth damp lerp (Fix F)
     const lerpSpeed = prefersReducedMotion ? 12 : 3.5;
     const factor = 1 - Math.exp(-lerpSpeed * delta);
 
-    tempPos.lerpVectors(camera.position, interpolatedPos, factor);
-    tempTarget.lerpVectors(tempTarget, interpolatedLookAt, factor);
+    tempPos.current.lerpVectors(camera.position, interpolatedPos.current, factor);
+    tempTarget.current.lerpVectors(tempTarget.current, interpolatedLookAt.current, factor);
 
-    camera.position.copy(tempPos);
-    camera.lookAt(tempTarget);
+    camera.position.copy(tempPos.current);
+    camera.lookAt(tempTarget.current);
 
     if (camera instanceof THREE.PerspectiveCamera) {
-      camera.fov = THREE.MathUtils.lerp(camera.fov, interpolatedFov, factor);
-      camera.updateProjectionMatrix();
+      perspectiveCamRef.current = camera;
+      perspectiveCamRef.current.fov = THREE.MathUtils.lerp(perspectiveCamRef.current.fov, interpolatedFov, factor);
+      perspectiveCamRef.current.updateProjectionMatrix();
     }
   });
 

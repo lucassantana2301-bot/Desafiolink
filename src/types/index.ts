@@ -1,8 +1,13 @@
-export type DevicePerformance = 'high' | 'medium' | 'low';
+export type DevicePerformance = 'high' | 'medium' | 'low' | 'unknown';
 
-export type CharacterState = '01_HUMAN' | '02_SKIN_REVEAL' | '03_HYBRID' | '04_ANDROID';
+export type CharacterState =
+  | '01_HUMAN'
+  | '02_SKIN_REVEAL'
+  | '03_HYBRID'
+  | '04_ANDROID'
+  | '05_NEXUS_FINAL';
 
-export type ObjectState = 
+export type ObjectState =
   | 'human-silhouette'
   | 'material-transition'
   | 'exploded-biomech'
@@ -27,11 +32,13 @@ export interface SceneConfig {
 export interface StoreState {
   scrollProgress: number;
   activeSceneId: string;
+  characterState: CharacterState;
   isLoaded: boolean;
   devicePerformance: DevicePerformance;
   prefersReducedMotion: boolean;
   setScrollProgress: (progress: number) => void;
   setActiveSceneId: (id: string) => void;
+  setCharacterState: (state: CharacterState) => void;
   setIsLoaded: (isLoaded: boolean) => void;
   setDevicePerformance: (perf: DevicePerformance) => void;
   setPrefersReducedMotion: (reduced: boolean) => void;

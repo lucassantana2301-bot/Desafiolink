@@ -6,11 +6,11 @@ import { useStore } from '@/store/useStore';
 import { SCENES } from '@/data/scenes';
 
 export default function HeroOverlay() {
-  // Slow Data: React state re-renders ONLY when activeSceneId changes (Fix 04)
   const activeSceneId = useStore((state) => state.activeSceneId);
+  const prefersReducedMotion = useStore((state) => state.prefersReducedMotion);
   const activeScene = SCENES.find((s) => s.id === activeSceneId) || SCENES[0];
 
-  // Fast Data DOM Refs (Fix 04 - Zero React re-renders per frame!)
+  // Fast Data DOM Refs (Zero React re-renders per frame)
   const progressBarRef = useRef<HTMLDivElement>(null);
   const progressTextRef = useRef<HTMLSpanElement>(null);
   const coordTextRef = useRef<HTMLDivElement>(null);
@@ -42,6 +42,21 @@ export default function HeroOverlay() {
     return () => unsubscribe();
   }, []);
 
+  // Motion variants respecting prefers-reduced-motion (Fix E)
+  const motionProps = prefersReducedMotion
+    ? {
+        initial: { opacity: 0 },
+        animate: { opacity: 1 },
+        exit: { opacity: 0 },
+        transition: { duration: 0.2 },
+      }
+    : {
+        initial: { opacity: 0, y: 20 },
+        animate: { opacity: 1, y: 0 },
+        exit: { opacity: 0, y: -15 },
+        transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] as const },
+      };
+
   return (
     <div className="fixed inset-0 z-10 pointer-events-none flex flex-col justify-between p-6 md:p-14 select-none">
       {/* HUD Corner Reticles & Technical Telemetry */}
@@ -72,10 +87,7 @@ export default function HeroOverlay() {
         <AnimatePresence mode="wait">
           <motion.div
             key={activeScene.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -15 }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            {...motionProps}
             className="space-y-4"
           >
             {/* Scene Subtitle / Tag */}

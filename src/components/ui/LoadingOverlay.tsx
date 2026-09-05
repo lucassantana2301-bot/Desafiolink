@@ -1,59 +1,45 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useProgress } from '@react-three/drei';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '@/store/useStore';
 
 export default function LoadingOverlay() {
-  const { progress } = useProgress();
+  const { progress, active, errors } = useProgress();
   const isLoaded = useStore((state) => state.isLoaded);
   const setIsLoaded = useStore((state) => state.setIsLoaded);
+  const prefersReducedMotion = useStore((state) => state.prefersReducedMotion);
 
-  const [displayProgress, setDisplayProgress] = useState(0);
+  const hasErrors = errors.length > 0;
+  const currentProgress = Math.round(progress);
 
   useEffect(() => {
-    const current = Math.round(progress);
-
-    const animationFrame = requestAnimationFrame(() => {
-      setDisplayProgress((prev) => Math.max(prev, current));
-    });
-
-    if (current >= 100 && !isLoaded) {
+    // Real asset loading resolution (Fix A)
+    // Only set isLoaded = true when progress reaches 100%, active is false, and zero errors exist.
+    if (!hasErrors && currentProgress >= 100 && !active && !isLoaded) {
       const timeout = setTimeout(() => {
         setIsLoaded(true);
-      }, 400);
-      return () => {
-        cancelAnimationFrame(animationFrame);
-        clearTimeout(timeout);
-      };
+      }, 300);
+      return () => clearTimeout(timeout);
     }
-
-    return () => cancelAnimationFrame(animationFrame);
-  }, [progress, isLoaded, setIsLoaded]);
-
-  // Fallback: Ensure loading completes if assets are cached or instantaneous
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDisplayProgress(100);
-      setIsLoaded(true);
-    }, 800);
-    return () => clearTimeout(timer);
-  }, [setIsLoaded]);
+  }, [currentProgress, active, hasErrors, isLoaded, setIsLoaded]);
 
   return (
     <AnimatePresence>
       {!isLoaded && (
         <motion.div
           initial={{ opacity: 1 }}
-          exit={{ opacity: 0, filter: 'blur(10px)' }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          exit={{ opacity: 0, filter: prefersReducedMotion ? 'none' : 'blur(8px)' }}
+          transition={{ duration: prefersReducedMotion ? 0.2 : 0.6, ease: [0.16, 1, 0.3, 1] as const }}
           className="fixed inset-0 z-50 bg-[#050505] flex flex-col justify-between p-10 font-mono text-white select-none pointer-events-none"
         >
           {/* Header */}
           <div className="flex justify-between items-center text-xs tracking-[0.3em] text-gray-500 uppercase">
-            <span className="text-[#00F0FF]">NEXUS // CORE</span>
-            <span>SYSTEM CALIBRATION</span>
+            <span className={hasErrors ? 'text-red-500 font-bold' : 'text-[#00F0FF]'}>
+              {hasErrors ? 'NEXUS // CORE ERROR' : 'NEXUS // CORE'}
+            </span>
+            <span>{hasErrors ? 'ASSET LOADING FAILED' : 'SYSTEM CALIBRATION'}</span>
           </div>
 
           {/* Center Brand & Loading Progress */}
@@ -61,27 +47,43 @@ export default function LoadingOverlay() {
             <h1 className="text-4xl sm:text-6xl font-black tracking-widest text-white uppercase font-sans">
               NEXUS
             </h1>
-            <div className="space-y-2">
-              <p className="text-xs text-[#00F0FF] tracking-[0.25em] uppercase animate-pulse">
-                CALIBRATING NEURAL MATRIX
-              </p>
-              <div className="text-5xl font-extrabold tracking-tighter text-white">
-                {String(displayProgress).padStart(3, '0')}%
+
+            {hasErrors ? (
+              <div className="space-y-3 bg-red-950/40 border border-red-500/40 p-6 max-w-md">
+                <p className="text-xs text-red-400 tracking-widest uppercase">
+                  UNABLE TO RESOLVE NEURAL ASSETS
+                </p>
+                <div className="text-[10px] text-red-300/70 text-left font-mono overflow-auto max-h-24">
+                  {errors.map((err, idx) => (
+                    <div key={idx}>[{idx + 1}] {String(err)}</div>
+                  ))}
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="space-y-2">
+                <p className="text-xs text-[#00F0FF] tracking-[0.25em] uppercase animate-pulse">
+                  {active ? 'LOADING NEURAL ASSETS' : 'CALIBRATING MATRIX'}
+                </p>
+                <div className="text-5xl font-extrabold tracking-tighter text-white">
+                  {String(currentProgress).padStart(3, '0')}%
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Footer Bar */}
+          {/* Footer Progress Bar */}
           <div className="w-full space-y-2">
             <div className="w-full h-[2px] bg-white/10 overflow-hidden">
               <div
-                className="h-full bg-[#00F0FF] transition-all duration-200 ease-out shadow-[0_0_10px_#00F0FF]"
-                style={{ width: `${displayProgress}%` }}
+                className={`h-full transition-all duration-200 ease-out ${
+                  hasErrors ? 'bg-red-500 shadow-[0_0_10px_#EF4444]' : 'bg-[#00F0FF] shadow-[0_0_10px_#00F0FF]'
+                }`}
+                style={{ width: `${currentProgress}%` }}
               />
             </div>
             <div className="flex justify-between text-[10px] text-gray-600 tracking-widest">
               <span>SYNAPTIC_INITIALIZATION</span>
-              <span>MEMORY_CHECK: OK</span>
+              <span>{hasErrors ? 'STATUS: CRITICAL' : 'MEMORY_CHECK: OK'}</span>
             </div>
           </div>
         </motion.div>

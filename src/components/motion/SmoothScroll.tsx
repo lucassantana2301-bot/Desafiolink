@@ -29,14 +29,25 @@ export default function SmoothScroll({ children }: SmoothScrollProps) {
     setDevicePerformance(perfTier);
     setPrefersReducedMotion(reducedMotion);
 
-    // 2. Initialize Lenis Smooth Scroll (Disabled/instant if prefers-reduced-motion is active)
+    // 2. Realtime OS prefers-reduced-motion Change Listener (Fix E)
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const handleMotionChange = (e: MediaQueryListEvent) => {
+      setPrefersReducedMotion(e.matches);
+    };
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleMotionChange);
+    } else {
+      mediaQuery.addListener(handleMotionChange);
+    }
+
+    // 3. Initialize Lenis Smooth Scroll (Disabled if prefers-reduced-motion is active)
     const lenis = new Lenis({
       duration: reducedMotion ? 0 : 1.4,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: !reducedMotion,
     });
 
-    // 3. Stable GSAP Ticker Callback (Fix 01 - Prevents Memory Leak & handles Strict Mode)
+    // 4. Stable GSAP Ticker Callback (Fix 01)
     const updateTicker = (time: number) => {
       lenis.raf(time * 1000);
     };
@@ -45,7 +56,7 @@ export default function SmoothScroll({ children }: SmoothScrollProps) {
     gsap.ticker.add(updateTicker);
     gsap.ticker.lagSmoothing(0);
 
-    // 4. GSAP ScrollTrigger timeline binding
+    // 5. GSAP ScrollTrigger timeline binding
     let lastSceneId = 'scene-01';
     const ctx = gsap.context(() => {
       ScrollTrigger.create({
@@ -57,7 +68,7 @@ export default function SmoothScroll({ children }: SmoothScrollProps) {
           const progress = self.progress;
           setScrollProgress(progress);
 
-          // Update activeSceneId ONLY when scene boundary changes (Fix 04 - Prevents 60FPS React re-renders)
+          // Update activeSceneId ONLY when scene boundary changes
           const currentScene = getActiveScene(progress);
           if (currentScene.id !== lastSceneId) {
             lastSceneId = currentScene.id;
@@ -68,6 +79,11 @@ export default function SmoothScroll({ children }: SmoothScrollProps) {
     });
 
     return () => {
+      if (mediaQuery.removeEventListener) {
+        mediaQuery.removeEventListener('change', handleMotionChange);
+      } else {
+        mediaQuery.removeListener(handleMotionChange);
+      }
       gsap.ticker.remove(updateTicker);
       ctx.revert();
       lenis.destroy();

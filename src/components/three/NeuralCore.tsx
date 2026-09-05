@@ -10,8 +10,16 @@ export default function NeuralCore() {
   const coreLinesRef = useRef<THREE.LineSegments>(null);
   const coreGroupRef = useRef<THREE.Group>(null);
 
-  // Generate sphere of synaptic nodes and connections
-  const nodeCount = 180;
+  const devicePerformance = useStore((state) => state.devicePerformance);
+
+  // Dynamic node count based on Performance Tier (Fix C)
+  const nodeCount = useMemo(() => {
+    if (devicePerformance === 'low') return 70;
+    if (devicePerformance === 'medium') return 120;
+    return 180; // High / Unknown
+  }, [devicePerformance]);
+
+  // Memoized buffer positions (Recalculated ONLY when nodeCount / devicePerformance changes)
   const { positions, linePositions } = useMemo(() => {
     const pos = new Float32Array(nodeCount * 3);
     const linePosList: number[] = [];
@@ -50,13 +58,13 @@ export default function NeuralCore() {
       positions: pos,
       linePositions: new Float32Array(linePosList),
     };
-  }, []);
+  }, [nodeCount]);
 
   useFrame((state, delta) => {
     const scrollProgress = useStore.getState().scrollProgress;
     const time = state.clock.getElapsedTime();
 
-    // GPU Culling (Fix 05): Hide NeuralCore when outside relevance range
+    // GPU Culling: Hide NeuralCore when outside relevance range
     const isVisible = scrollProgress >= 0.40 && scrollProgress <= 0.92;
     if (coreGroupRef.current) {
       coreGroupRef.current.visible = isVisible;
