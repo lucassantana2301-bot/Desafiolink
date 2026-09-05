@@ -1,0 +1,68 @@
+[
+  {
+    "id": "scene-01",
+    "name": "Hero Cinematic",
+    "scrollRange": [0.0, 0.15],
+    "title": "JCS",
+    "subtitle": "PRECISION FORGED IN STEEL",
+    "description": "Atmosfera escura, iluminação industrial rasteira, objeto geométrico metálico central em rotação sutil.",
+    "cameraPosition": [0, 0, 5],
+    "objectState": "assembled",
+    "shaderEffect": "metallic-pbr"
+  },
+  {
+    "id": "scene-02",
+    "name": "Approach & Material Detail",
+    "scrollRange": [0.15, 0.35],
+    "title": "METALLIC PURITY",
+    "subtitle": "SURFACE ENGINE & REFLECTIONS",
+    "description": "A câmera aproxima-se do núcleo do objeto metálico. Reflexos industriais reagem às luzes pontuais.",
+    "cameraPosition": [0, 0, 3.2],
+    "objectState": "spinning-fast",
+    "shaderEffect": "anisotropic-metal"
+  },
+  {
+    "id": "scene-03",
+    "name": "Exploded View",
+    "scrollRange": [0.35, 0.55],
+    "title": "ENGINEERED WITH PRECISION",
+    "subtitle": "HIGH-TOLERANCE COMPONENT DISSECTION",
+    "description": "O objeto central separa-se em componentes flutuantes de alta precisão em vista explodida.",
+    "cameraPosition": [0, 1.2, 4.0],
+    "objectState": "exploded",
+    "shaderEffect": "component-highlight"
+  },
+  {
+    "id": "scene-04",
+    "name": "Raw Material Fly-Through",
+    "scrollRange": [0.55, 0.75],
+    "title": "FROM RAW MATERIAL TO PRECISION",
+    "subtitle": "THERMAL TRANSFORMATION & SPARKS",
+    "description": "A câmera atravessa o centro da composição. Efeito de faíscas de solda e fluxo de partículas de metal.",
+    "cameraPosition": [0, 0, 1.5],
+    "objectState": "fly-through",
+    "shaderEffect": "sparks-dissolve"
+  },
+  {
+    "id": "scene-05",
+    "name": "Reassembly & Structure",
+    "scrollRange": [0.75, 0.90],
+    "title": "INDUSTRIAL FORGE",
+    "subtitle": "SYSTEM INTEGRATION & INTEGRITY",
+    "description": "As peças reorganizam-se perfeitamente, revelando o projeto industrial completo com luzes de escaneamento.",
+    "cameraPosition": [0, 0.5, 4.5],
+    "objectState": "reassembled",
+    "shaderEffect": "scanline-grid"
+  },
+  {
+    "id": "scene-06",
+    "name": "Technical Blueprint & Configurator",
+    "scrollRange": [0.90, 1.00],
+    "title": "TECHNICAL BLUEPRINT",
+    "subtitle": "CONFIGURADOR DE ORÇAMENTO INDUSTRIAL",
+    "description": "O objeto 3D transita para modo wireframe / desenho técnico, abrindo a interface do configurador de orçamento.",
+    "cameraPosition": [0, 0, 6.0],
+    "objectState": "wireframe",
+    "shaderEffect": "technical-blueprint"
+  }
+]

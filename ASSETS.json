@@ -1,0 +1,39 @@
+{
+  "models": [
+    {
+      "id": "hero-gear-placeholder",
+      "name": "Industrial Precision Core",
+      "path": "/models/hero_gear.glb",
+      "format": "gltf-draco",
+      "type": "placeholder"
+    }
+  ],
+  "textures": [
+    {
+      "id": "brushed-metal-normal",
+      "name": "Brushed Steel Normal Map",
+      "path": "/textures/brushed_metal_normal.jpg",
+      "format": "webp"
+    },
+    {
+      "id": "industrial-hdr",
+      "name": "Industrial Warehouse HDRI Environment",
+      "path": "/textures/industrial_studio.hdr",
+      "format": "hdr"
+    }
+  ],
+  "fonts": [
+    {
+      "id": "editorial-title",
+      "name": "Clash Display / Editorial Serif",
+      "path": "/fonts/editorial-title.woff2"
+    },
+    {
+      "id": "hud-mono",
+      "name": "JetBrains Mono / Technical HUD",
+      "path": "/fonts/hud-mono.woff2"
+    }
+  ],
+  "videos": [],
+  "images": []
+}
