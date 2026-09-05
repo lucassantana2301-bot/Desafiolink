@@ -8,7 +8,8 @@ export interface SceneConfig {
   subtitle: string;
   description: string;
   cameraPosition: [number, number, number];
-  objectState: 'assembled' | 'spinning-fast' | 'exploded' | 'fly-through' | 'reassembled' | 'wireframe';
+  cameraFov?: number;
+  objectState: 'human-silhouette' | 'material-transition' | 'exploded-biomech' | 'core-reveal' | 'inside-matrix' | 'hybrid-reborn' | string;
   shaderEffect?: string;
 }
 

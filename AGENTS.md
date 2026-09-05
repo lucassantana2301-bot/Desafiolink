@@ -1,6 +1,6 @@
-# AGENTS.md - System Guidelines & Operational Protocols
+# AGENTS.md - NEXUS System Guidelines & Operational Protocols
 
-Bem-vindo ao projeto **JCS Metalúrgica 3D Cinematic Website**.
+Bem-vindo ao projeto **NEXUS — Experimental 3D Cinematic Experience**.
 
 Este documento define os papéis, responsabilidades e diretrizes obrigatórias para qualquer agente (humano ou de IA) que trabalhe na base de código deste projeto.
 
@@ -10,62 +10,58 @@ Este documento define os papéis, responsabilidades e diretrizes obrigatórias p
 
 **Antes de escrever ou alterar qualquer código, TODO agente DEVE obrigatoriamente ler e assimilar os seguintes documentos:**
 
-1. [`docs/MASTER.md`](file:///c:/Users/alexa/OneDrive/Área%20de%20Trabalho/Linkdinpf/docs/MASTER.md) - Visão geral do projeto, conceito JCS, diretrizes cinematográficas e fluxo narrativo das 6 Cenas.
-2. [`docs/DESIGN_SYSTEM.md`](file:///c:/Users/alexa/OneDrive/Área%20de%20Trabalho/Linkdinpf/docs/DESIGN_SYSTEM.md) - Tokens visuais, paleta de cores (preto, grafite, aço), tipografia editorial e padrões de interface HUD técnico.
-3. [`docs/MOTION_SYSTEM.md`](file:///c:/Users/alexa/OneDrive/Área%20de%20Trabalho/Linkdinpf/docs/MOTION_SYSTEM.md) - Arquitetura de movimento GSAP + ScrollTrigger, Lenis smooth scroll e Framer Motion para microinterações.
-4. [`docs/THREE_SYSTEM.md`](file:///c:/Users/alexa/OneDrive/Área%20de%20Trabalho/Linkdinpf/docs/THREE_SYSTEM.md) - Cenas 3D, React Three Fiber, @react-three/drei, CameraRig, shaders, iluminação industrial e pós-processamento.
+1. [`docs/MASTER.md`](file:///c:/Users/alexa/OneDrive/Área%20de%20Trabalho/Linkdinpf/docs/MASTER.md) - Visão geral do projeto, conceito NEXUS ("WHERE DOES HUMAN END AND MACHINE BEGIN?"), direção de arte sci-fi e fluxo narrativo das 6 Cenas.
+2. [`docs/DESIGN_SYSTEM.md`](file:///c:/Users/alexa/OneDrive/Área%20de%20Trabalho/Linkdinpf/docs/DESIGN_SYSTEM.md) - Tokens visuais, paleta monochrome (preto, titânio, ciano sutil), tipografia Grotesk/Mono e interface HUD de telemetria cognitiva.
+3. [`docs/MOTION_SYSTEM.md`](file:///c:/Users/alexa/OneDrive/Área%20de%20Trabalho/Linkdinpf/docs/MOTION_SYSTEM.md) - Arquitetura de movimento GSAP + ScrollTrigger (~600vh), Lenis smooth scroll e Framer Motion para microinterações de UI.
+4. [`docs/THREE_SYSTEM.md`](file:///c:/Users/alexa/OneDrive/Área%20de%20Trabalho/Linkdinpf/docs/THREE_SYSTEM.md) - R3F, Drei, CameraRig keyframing, NexusPrototype, NeuralCore, NeuralWorld (Points/BufferGeometry) e pós-processamento.
 
 ---
 
 ## 👥 PAPÉIS E RESPONSABILIDADES DOS AGENTES
 
 ### 1. 🎬 Creative Director
-- **Foco:** Direção de arte, atmosfera visual, storytelling 3D e consistência da marca JCS Metalúrgica.
+- **Foco:** Direção de arte cinematográfica, atmosfera sci-fi minimalista, storytelling visual e a pergunta central: *"WHERE DOES HUMAN END AND MACHINE BEGIN?"*.
 - **Responsabilidades:**
-  - Garantir a estética cinematográfica industrial premium (Metal, Precisão, Engenharia, Transformação).
-  - Validar transições de cena, composições assimétricas e tipografia editorial.
-  - Assegurar que o site **não** se pareça com um template corporativo comum.
+  - Garantir a estética sofisticada e sombria (Monocromático, Titânio, Biomecânica, Redes Neurais, Ciano sutil).
+  - Impedir que o site pareça um template SaaS, um dashboard corporativo ou um visual gamer neon genérico.
+  - Assegurar composições assimétricas, espaço negativo generoso e peso cinematográfico nas transições.
 
 ### 2. 💻 Frontend Engineer
 - **Foco:** Arquitetura Next.js (App Router), TypeScript, Tailwind CSS e estrutura de componentes UI/Layout.
 - **Responsabilidades:**
   - Manter código TypeScript estritamente tipado (`types/`).
-  - Desenvolver elementos de interface HUD industrial em `components/ui/`.
-  - Integrar Lenis smooth scroll e gerenciar layout responsivo.
-  - Garantir compatibilidade cross-browser e acessibilidade sem comprometer a visão criativa.
+  - Desenvolver elementos de interface HUD experimental em `components/ui/`.
+  - Integrar Lenis smooth scroll e gerenciar layout responsivo sem quebrar o canvas fixed.
 
 ### 3. 🌀 Motion Engineer
-- **Foco:** Orquestração de movimento, GSAP Timelines, ScrollTrigger e sincronização de scroll.
+- **Foco:** Orquestração de movimento, GSAP Timelines, ScrollTrigger (~600vh) e sincronização de scroll.
 - **Responsabilidades:**
   - Controlar a timeline mestre conectada ao progresso global do scroll (`scrollProgress` de 0 a 1 em `store/useStore.ts`).
   - Sincronizar Lenis com GSAP ScrollTrigger sem *jank* ou perda de performance.
-  - Utilizar Framer Motion exclusivamente para micro-interações de UI e texto (NÃO usar Framer Motion para controlar a cena 3D principal).
+  - Utilizar Framer Motion exclusivamente para microinterações de UI e texto.
 
 ### 4. 🧊 WebGL / Three.js Engineer
-- **Foco:** React Three Fiber, Three.js, Shaders GLSL, Iluminação, Materiais e Pós-processamento.
+- **Foco:** React Three Fiber, Three.js, Points/BufferGeometry, Instancing, Camera Keyframing e Pós-processamento.
 - **Responsabilidades:**
-  - Construir e otimizar a `SceneCanvas` reutilizável e o `CameraRig`.
-  - Desenvolver materiais metálicos com reflexão física realista (PBR) e shaders customizados em `shaders/`.
-  - Configurar partículas industriais, faíscas metálicas e montagem de vistas explodidas (*exploded view*).
+  - Desenvolver e otimizar os componentes 3D: `NexusPrototype`, `NeuralCore` e `NeuralWorld`.
+  - Configurar o `CameraRig` com interpolação suave (position, rotation, target, FOV).
+  - Manter alta taxa de quadros (60 FPS) usando `BufferGeometry` eficientes no mundo neural.
 
 ### 5. ⚡ Performance Engineer
-- **Foco:** Taxa de quadros (60 FPS), orçamentos de memória, otimização WebGL e adaptações mobile.
+- **Foco:** Framerate (60 FPS), orçamentos de memória WebGL e adaptações móveis.
 - **Responsabilidades:**
   - Implementar tiers de performance (`high`, `low`, `mobile`) via Zustand.
-  - Otimizar carregamento de modelos GLTF/GLB (Draco compression) e texturas (KTX2/WebP).
-  - Aplicar `adaptive DPR` (Device Pixel Ratio) e garantir modo `reduced-motion`.
+  - Aplicar `adaptive DPR` e responder à preferência `prefers-reduced-motion`.
 
 ### 6. 🧪 QA Reviewer
-- **Foco:** Qualidade de código, compilação limpa, linters e testes de integração.
+- **Foco:** Qualidade de código, compilação limpa e testes de integração.
 - **Responsabilidades:**
-  - Garantir zero erros de TypeScript (`tsc --noEmit`) e zero avisos de ESLint.
+  - Garantir zero erros de TypeScript (`npx tsc --noEmit`) e zero avisos de ESLint.
   - Verificar integridade do build (`npm run build`).
-  - Validar suavidade das transições em múltiplos dispositivos.
 
 ---
 
 ## 🛠️ REGRAS DE CÓDIGO E CONVENÇÕES
 - Todo arquivo React com interatividade client-side deve conter `'use client'`.
-- Nomes de arquivos 3D e componentes de cena ficam em `src/components/three/` e `src/scenes/`.
-- Todos os estados globais de scroll/cena pertencem ao `store/useStore.ts`.
-- Mantenha a separação entre componentes UI 2D (`components/ui/`) e Canvas 3D (`components/three/`).
+- Nomes de componentes 3D ficam em `src/components/three/`.
+- Todos os estados globais pertencem ao `store/useStore.ts`.

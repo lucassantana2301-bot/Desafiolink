@@ -1,0 +1,69 @@
+'use client';
+
+import React, { useRef } from 'react';
+import { useFrame } from '@react-three/fiber';
+import * as THREE from 'three';
+import { useStore } from '@/store/useStore';
+
+export default function LightsEnvironment() {
+  const particlesRef = useRef<THREE.Points>(null);
+
+  // Generate subtle atmospheric particles
+  const particleCount = 350;
+  const positions = new Float32Array(particleCount * 3);
+  for (let i = 0; i < particleCount; i++) {
+    positions[i * 3] = (Math.random() - 0.5) * 12;
+    positions[i * 3 + 1] = (Math.random() - 0.5) * 12;
+    positions[i * 3 + 2] = (Math.random() - 0.5) * 12;
+  }
+
+  useFrame((state, delta) => {
+    const scrollProgress = useStore.getState().scrollProgress;
+
+    if (particlesRef.current) {
+      particlesRef.current.rotation.y += delta * 0.03;
+      particlesRef.current.rotation.x += delta * 0.01;
+      
+      const opacity = 0.2 + Math.sin(scrollProgress * Math.PI) * 0.3;
+      (particlesRef.current.material as THREE.PointsMaterial).opacity = opacity;
+    }
+  });
+
+  return (
+    <>
+      {/* Dark Ambient Tone */}
+      <ambientLight intensity={0.25} color="#0F1115" />
+
+      {/* Primary Cold Side Light */}
+      <directionalLight
+        position={[-6, 4, 5]}
+        intensity={3.0}
+        color="#F8FAFC"
+        castShadow
+      />
+
+      {/* Subtle Cyan Rim Light */}
+      <pointLight position={[5, -3, -3]} intensity={4.0} color="#00F0FF" />
+
+      {/* Deep Background Fill */}
+      <pointLight position={[0, 6, -5]} intensity={1.5} color="#1E232B" />
+
+      {/* Volumetric Atmosphere Dust */}
+      <points ref={particlesRef}>
+        <bufferGeometry>
+          <bufferAttribute
+            attach="attributes-position"
+            args={[positions, 3]}
+          />
+        </bufferGeometry>
+        <pointsMaterial
+          size={0.03}
+          color="#9CA8B6"
+          transparent
+          opacity={0.3}
+          blending={THREE.AdditiveBlending}
+        />
+      </points>
+    </>
+  );
+}

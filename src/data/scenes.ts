@@ -1,7 +1,7 @@
 import { SceneConfig } from '@/types';
 import scenesData from '../../SCENES.json';
 
-export const SCENES: SceneConfig[] = scenesData as SceneConfig[];
+export const SCENES: SceneConfig[] = scenesData as unknown as SceneConfig[];
 
 export function getActiveScene(progress: number): SceneConfig {
   const current = SCENES.find(

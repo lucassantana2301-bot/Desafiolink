@@ -1,64 +1,26 @@
-# THREE_SYSTEM.md - Cenas 3D, WebGL e Post-Processing
+# THREE_SYSTEM.md - Ecossistema 3D e Matriz Neural NEXUS
 
-## 🧊 ESTRUTURA DO ECOSSISTEMA THREE.JS / R3F
-
-A camada 3D é construída sobre React Three Fiber (R3F) e `@react-three/drei`, estruturada de forma modular em `src/components/three/` e `src/scenes/`.
+## 🧊 ESTRUTURA DOS COMPONENTES WEBGL
 
 ```text
 src/components/three/
-├── SceneCanvas.tsx          # Reusable Canvas wrapper com Suspense, Preload & EffectComposer
-├── CameraRig.tsx            # Rig de câmera responsivo a scroll + mouse parallax sutil
-├── MetallicHeroObject.tsx   # Objeto 3D procedural com materiais metálicos PBR e animação
-├── IndustrialEnvironment.tsx# Configuração de iluminação industrial, studio lights & HDRI
-└── ParticlesMetal.tsx       # Sistema de partículas (faíscas metálicas e fumaça)
+├── SceneCanvas.tsx          # Canvas container fullscreen com Suspense e EffectComposer
+├── CameraRig.tsx            # Keyframing da câmera 3D (posição, rotação, FOV) por scroll
+├── NexusPrototype.tsx       # Protagonista abstrato (conchas, anéis mecânicos, silhueta)
+├── NeuralCore.tsx           # Núcleo neural cerebral em esfera de partículas e conexões
+├── NeuralWorld.tsx          # Matriz neural 3D imersiva (BufferGeometry & Points)
+└── LightsEnvironment.tsx    # Iluminação dramática lateral e ambiência titanium
 ```
 
 ---
 
-## 💡 ILUMINAÇÃO INDUSTRIAL & MATERIAIS
+## 📷 KEYFRAMING DA CÂMERA (`CameraRig.tsx`)
 
-### 1. PBR Metalness Setup
-- `roughness`: `0.15 - 0.35` (Superfície levemente escovada)
-- `metalness`: `0.95 - 1.0` (Aço industrial puro)
-- `clearcoat`: `0.3`
-- `clearcoatRoughness`: `0.1`
-
-### 2. Studio Lighting Rig
-- **Key Light:** Key light frontal dramática fria (`#E6F0FF`, intensidade: 3.5).
-- **Rim Light (Contraluz Industrial):** Rim light rasteira quente (`#FF6600`, intensidade: 5.0) para desenhar a silhueta metálica.
-- **Fill Ambient:** Ambiência mínima escura (`#05070A`, intensidade: 0.2) para manter o contraste profundo.
-
----
-
-## 📷 CAMERA RIG ARCHITECTURE
-
-O `CameraRig` escuta o `scrollProgress` global e calcula a trajetória da câmera (curva Bezier de animação ou interpolação linear entre waypoints de cena):
-
-| Scroll Range | Cena | Posição Câmera (x, y, z) | Rotação Câmera |
-| :--- | :--- | :--- | :--- |
-| `0.00 - 0.15` | Scene 01 | `[0.0, 0.0, 5.0]` | LookAt Center |
-| `0.15 - 0.35` | Scene 02 | `[0.0, 0.0, 2.8]` | Close-up Zoom |
-| `0.35 - 0.55` | Scene 03 | `[0.0, 1.2, 4.0]` | High-Angle Exploded |
-| `0.55 - 0.75` | Scene 04 | `[0.0, 0.0, 1.2]` | Fly-Through Tunnel |
-| `0.75 - 0.90` | Scene 05 | `[0.0, 0.5, 4.5]` | Assembly View |
-| `0.90 - 1.00` | Scene 06 | `[0.0, 0.0, 6.0]` | Blueprint Wireframe |
-
----
-
-## 🧪 SHADERS CUSTOMIZADOS GLSL (`src/shaders/`)
-
-A pasta `src/shaders/` é reservada para programas customizados de fragment e vertex shaders:
-
-- `metallicDissolve.vert / .frag`: Transição de dissolve térmico / faíscas.
-- `blueprintWireframe.frag`: Shader de brilho técnico neon sobre linhas CAD.
-- `noiseDisplacement.vert`: Deslocamento de vértices em alta temperatura.
-
----
-
-## 🪄 PÓS-PROCESSAMENTO (`@react-three/postprocessing`)
-
-Efeitos configurados na `SceneCanvas`:
-
-1. **Bloom:** `intensity: 0.5, luminanceThreshold: 0.8, luminanceSmoothing: 0.2` (para destacar faíscas e bordas brilhantes).
-2. **Vignette:** `escuridão rasteira nos cantos` (`offset: 0.3, darkness: 0.8`).
-3. **ChromaticAberration:** Ligeira distorção óptica periférica (`offset: [0.0005, 0.0005]`).
+| Scroll Range | Cena | Posição Câmera | FOV | Foco Visual |
+| :--- | :--- | :--- | :--- | :--- |
+| `0.00 - 0.15` | Scene 01 | `[0.0, 0.0, 6.0]` | `45°` | Silhueta inicial (Humano) |
+| `0.15 - 0.32` | Scene 02 | `[0.0, 0.2, 3.8]` | `42°` | Close-up da pele/wireframe |
+| `0.32 - 0.50` | Scene 03 | `[0.8, 0.6, 4.5]` | `40°` | Órbita explodida (Máquina) |
+| `0.50 - 0.65` | Scene 04 | `[0.0, 0.0, 2.2]` | `50°` | Enfoque no Núcleo Neural |
+| `0.65 - 0.88` | Scene 05 | `[0.0, 0.0, -2.5]` | `65°` | Imersão DENTRO da Rede Neural |
+| `0.88 - 1.00` | Scene 06 | `[0.0, 0.0, 5.2]` | `45°` | Recuo para o Híbrido Final |

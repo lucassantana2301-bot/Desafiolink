@@ -1,51 +1,42 @@
-# DESIGN_SYSTEM.md - Sistema Visual JCS Metalúrgica
+# DESIGN_SYSTEM.md - Diretrizes Visuais NEXUS
 
-## 🎨 PALETA DE CORES (INDUSTRIAL METALLIC PALETTE)
+## 🎨 PALETA DE CORES MONOCROMÁTICA & SCI-FI
 
-O sistema de cores é derivado de metais industriais, ambiente de fundição e luzes de alta precisão de laboratório.
+A paleta visual de NEXUS é sombria, minimalista e tecnológica, construída sobre tons de preto profundo, metais frios e um accent ciano sutil.
 
 | Nome Token | HEX | HSL | Aplicação |
 | :--- | :--- | :--- | :--- |
-| `--bg-darkness` | `#050505` | `hsl(0, 0%, 2%)` | Fundo principal da aplicação |
-| `--metal-graphite` | `#121417` | `hsl(210, 13%, 8%)` | Cards HUD, superfícies de interface |
-| `--steel-border` | `#2A2F36` | `hsl(214, 12%, 19%)` | Linhas de cotação e divisórias HUD |
-| `--steel-light` | `#8E99A6` | `hsl(213, 12%, 60%)` | Textos secundários técnicos |
-| `--pure-white` | `#F5F7FA` | `hsl(210, 20%, 97%)` | Tipografia editorial de alto contraste |
-| `--spark-accent` | `#FF5500` | `hsl(20, 100%, 50%)` | Accent sutil (faíscas, alertas de precisão) |
-| `--cyan-scan` | `#00F0FF` | `hsl(184, 100%, 50%)` | Linhas de escaneamento laser técnico |
+| `--bg-nexus` | `#050505` | `hsl(0, 0%, 2%)` | Fundo principal da aplicação |
+| `--titanium-dark` | `#0F1115` | `hsl(220, 16%, 7%)` | Molduras HUD e retículos discretos |
+| `--titanium-border`| `#1E232B` | `hsl(216, 18%, 14%)` | Divisórias finas de telemetria |
+| `--silver-text` | `#9CA8B6` | `hsl(212, 16%, 66%)` | Microtipografia técnica e dados |
+| `--pure-white` | `#F8FAFC` | `hsl(210, 40%, 98%)` | Tipografia editorial principal |
+| `--cyan-accent` | `#00F0FF` | `hsl(184, 100%, 50%)` | Accent sutil para pulsos neurais e glow |
 
 ---
 
 ## 🔤 TYPOGRAPHY SYSTEM
 
-O contraste entre **tipografia editorial ousada** e **mono-espaçada técnica** cria o tom de alta engenharia.
-
-### 1. Title Font (Editorial & High-Fashion Industrial)
-- **Family:** Custom Display / Sans-Serif Editorial (`font-display`)
-- **Estilo:** All-caps, tracking ajustado, proporções clássicas.
-- **Uso:** Títulos de cena ("JCS", "PRECISION FORGED IN STEEL").
-
-### 2. Technical HUD Font (Engineering Monospace)
-- **Family:** JetBrains Mono / Space Mono (`font-mono`)
-- **Estilo:** Maiúsculas, tracking largo (`tracking-widest`), tamanhos reduzidos (10px - 12px).
-- **Uso:** Coordenadas de câmera, indicadores de tolerances, progresso de scroll em tempo real.
+1. **Title Font (Editorial Grotesk):**
+   - Sans-serif de proporções gigantescas (`text-6xl` a `text-9xl`), All-Caps, tracking condensado ou ligeiramente expandido (`tracking-tight` / `tracking-wider`).
+2. **Telemetry Font (Monospace Technical):**
+   - JetBrains Mono / Space Mono (`font-mono`), tamanhos micro (`text-[10px]` a `text-xs`), tracking largo (`tracking-[0.25em]`).
 
 ---
 
-## 🖥️ ELEMENTOS DE INTERFACE HUD (HEADS-UP DISPLAY)
+## 🖥️ INTERFACE HUD DE TELEMETRIA COGNITIVA
 
-A interface 2D não deve cobrir a cena 3D, mas sim comportar-se como um visor tático de precisão industrial:
+Elementos táticos de interface distribuídos no viewport 2D:
 
-1. **Crosshairs e Grid Lines:** Marcadores finos de canto (`+`, `[ ]`, `-- --`).
-2. **Readouts Dinâmicos:** Exibição contínua do progresso do scroll (`SCROLL_POS: 0.428`), framerate (`FPS: 60`), e cena ativa (`SCENE_03 // EXPLODED`).
-3. **Espaço Negativo Generoso:** 70%+ do viewport é reservado para a valorização da luz e do objeto 3D.
-4. **Composição Assimétrica:** Títulos desalinhados propositalmente com margens técnicas e numeração indexada (`01 // 06`).
+- Retículos de canto (`NXS // 01`, `SYSTEM ONLINE`, `NEURAL STATUS`).
+- Indicadores de dados dinâmicos (`VISION`, `MEMORY`, `COGNITIVE LOAD`).
+- Barra discreta de progresso de scroll em tempo real (`0.0% -> 100.0%`).
+- Coordenadas vivas no espaço (`X: 0.42 / Y: -0.18 / Z: 3.12`).
 
 ---
 
-## ⛔ O QUE NÃO FAZER (DESIGN ANTI-PATTERNS)
+## ⛔ O QUE NÃO FAZER
 
-- ❌ NÃO usar cards arredondados genéricos (`rounded-2xl` com sombras suaves).
-- ❌ NÃO usar gradientes coloridos vibrantes estilo "SaaS marketing web".
-- ❌ NÃO colocar botões coloridos chamativos com cantos redondos tipo pílula.
-- ❌ NÃO usar ilustrações planas (*flat design*) ou ícones simplistas de vetor corporativo.
+- ❌ NÃO transformar o site em uma estética "neon cyberpunk" apelativa ou estampa gamer.
+- ❌ NÃO criar cards SaaS corporativos com sombras arredondadas.
+- ❌ NÃO copiar personagens conhecidos da ficção científica.
