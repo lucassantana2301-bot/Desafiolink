@@ -58,10 +58,15 @@ export default function CameraRig() {
     currentLookAt.current.set(...currentTargetArr);
     nextLookAt.current.set(...nextTargetArr);
 
+    // Procedural organic camera breathing & drift
+    const time = state.clock.getElapsedTime();
+    const driftX = prefersReducedMotion ? 0 : Math.sin(time * 0.8) * 0.04;
+    const driftY = prefersReducedMotion ? 0 : Math.cos(time * 0.6) * 0.04;
+
     // 4. Interpolate Position, FOV, and Target between current & next waypoints
     interpolatedPos.current.lerpVectors(currentPos.current, nextPos.current, localT);
-    interpolatedPos.current.x += mouseX;
-    interpolatedPos.current.y += mouseY;
+    interpolatedPos.current.x += mouseX + driftX;
+    interpolatedPos.current.y += mouseY + driftY;
 
     interpolatedLookAt.current.lerpVectors(currentLookAt.current, nextLookAt.current, localT);
 

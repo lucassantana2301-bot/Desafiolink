@@ -34,14 +34,18 @@ float pseudoNoise(vec2 st) {
 
 void main() {
   float noise = pseudoNoise(vUv * uNoiseScale + vec2(uTime * 0.1));
-  
+
   if (noise < uProgress) {
     discard;
   }
 
   float edge = smoothstep(uProgress, uProgress + uEdgeWidth, noise);
   vec3 baseColor = vec3(0.06, 0.07, 0.09);
-  vec3 finalColor = mix(uEdgeColor, baseColor, edge);
+  vec3 dissolveColor = mix(uEdgeColor, baseColor, edge);
+
+  // Subtle metallic fresnel rim (vNormal is view-space, camera looks down -Z in view space)
+  float fresnel = pow(1.0 - clamp(abs(vNormal.z), 0.0, 1.0), 2.5);
+  vec3 finalColor = dissolveColor + uEdgeColor * fresnel * 0.5;
 
   gl_FragColor = vec4(finalColor, 1.0);
 }
@@ -61,6 +65,7 @@ export default function NexusDissolveMaterial({
   edgeColor = '#00F0FF',
 }: NexusDissolveMaterialProps) {
   const materialRef = useRef<THREE.ShaderMaterial>(null);
+  const lastEdgeColorRef = useRef<string>(edgeColor);
 
   // Memoize uniforms structure outside render loop (Fix J - Zero uniform allocations per frame)
   const uniforms = useMemo(
@@ -81,6 +86,12 @@ export default function NexusDissolveMaterial({
       materialRef.current.uniforms.uProgress.value = progress;
       materialRef.current.uniforms.uNoiseScale.value = noiseScale;
       materialRef.current.uniforms.uEdgeWidth.value = edgeWidth;
+
+      // Only reparse the color when it actually changes (Color.set() is not free)
+      if (lastEdgeColorRef.current !== edgeColor) {
+        lastEdgeColorRef.current = edgeColor;
+        materialRef.current.uniforms.uEdgeColor.value.set(edgeColor);
+      }
     }
   });
 

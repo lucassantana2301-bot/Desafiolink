@@ -4,6 +4,7 @@ import React, { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useStore } from '@/store/useStore';
+import MetallicHeroObject from './MetallicHeroObject';
 
 export default function NexusPrototype() {
   const groupRef = useRef<THREE.Group>(null);
@@ -79,17 +80,8 @@ export default function NexusPrototype() {
   return (
     <group ref={groupRef} position={[0, 0, 0]}>
       <group ref={outerShellGroupRef}>
-        {/* Abstract Head Silhouette (Stylized Titanium / Obsidian Head-like ellipsoid) */}
-        <mesh ref={headSilhouetteRef} position={[0, 0, 0]}>
-          <sphereGeometry args={[0.9, 32, 32]} />
-          <meshPhysicalMaterial
-            color="#0F1115"
-            roughness={0.2}
-            metalness={0.9}
-            clearcoat={0.4}
-            clearcoatRoughness={0.1}
-          />
-        </mesh>
+        {/* Abstract Head Silhouette - metallic dissolve-capable hero object (Pre-GLB placeholder) */}
+        <MetallicHeroObject ref={headSilhouetteRef} radius={0.9} />
 
         {/* Wireframe Biomechanical Inner Layer */}
         <mesh ref={wireframeLayerRef} position={[0, 0, 0]}>

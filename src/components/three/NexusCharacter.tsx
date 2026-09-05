@@ -8,6 +8,7 @@ import { useStore } from '@/store/useStore';
 import { getCharacterState } from '@/lib/characterStateMachine';
 import { getCharacterTransition, ModelType } from '@/utils/nexusTransitions';
 import NexusPrototype from './NexusPrototype';
+import HolographicConceptDisplay from './HolographicConceptDisplay';
 
 // Paths for the official 3D GLB Models (Production Assets)
 export const GLB_MODEL_PATHS = {
@@ -41,9 +42,36 @@ interface GLBModelInstanceProps {
  * Individual GLB Head Model Renderer
  * Keeps cached scenes in VRAM without unmounting to eliminate GC jank during scroll transitions.
  */
+function disposeObject3D(root: THREE.Object3D) {
+  root.traverse((child) => {
+    const mesh = child as THREE.Mesh;
+    if (mesh.geometry) {
+      mesh.geometry.dispose();
+    }
+    const material = mesh.material;
+    if (material) {
+      const materials = Array.isArray(material) ? material : [material];
+      materials.forEach((mat) => {
+        Object.values(mat).forEach((value) => {
+          if (value instanceof THREE.Texture) {
+            value.dispose();
+          }
+        });
+        mat.dispose();
+      });
+    }
+  });
+}
+
 function GLBHeadInstance({ path, visible }: GLBModelInstanceProps) {
   const { scene } = useGLTF(path);
   const clone = React.useMemo(() => scene.clone(true), [scene]);
+
+  // Release cloned geometries/materials/textures when this instance goes away
+  // (e.g. hasGLBModels flips back to false, or the whole container unmounts).
+  React.useEffect(() => {
+    return () => disposeObject3D(clone);
+  }, [clone]);
 
   return <primitive object={clone} visible={visible} />;
 }
@@ -58,19 +86,34 @@ export default function NexusCharacter() {
   const containerRef = useRef<THREE.Group>(null);
   const setCharacterState = useStore((state) => state.setCharacterState);
   const lastStateRef = useRef<string>('01_HUMAN');
+  const lastTransitionKeyRef = useRef<string>('human|');
 
   // Track if GLB assets are available in public/models/nexus/
   const [hasGLBModels, setHasGLBModels] = useState<boolean>(false);
   const [transitionData, setTransitionData] = useState(() => getCharacterTransition(0));
 
-  // Check if GLBs are present on runtime (Pre-production fallback check)
+  // Computed once: avoids allocating + dispatching a CustomEvent every frame
+  // when nobody (DebugHUD, ?debug3d=1) is listening.
+  const [isDebugActive] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    return new URLSearchParams(window.location.search).get('debug3d') === '1';
+  });
+
+  // Check if ALL THREE GLBs are present on runtime (Pre-production fallback check).
+  // Requiring all three (not just humanHead) avoids a partial-asset drop breaking
+  // the experience: useGLTF on a missing file throws past Suspense into the
+  // ErrorBoundary, which would blank the entire 3D canvas over one missing file.
   useEffect(() => {
     let isMounted = true;
     async function checkGLBAvailability() {
       try {
-        const res = await fetch(GLB_MODEL_PATHS.human, { method: 'HEAD' });
-        if (res.ok && isMounted) {
-          setHasGLBModels(true);
+        const results = await Promise.all(
+          Object.values(GLB_MODEL_PATHS).map((path) =>
+            fetch(path, { method: 'HEAD' }).then((res) => res.ok).catch(() => false)
+          )
+        );
+        if (isMounted) {
+          setHasGLBModels(results.every(Boolean));
         }
       } catch {
         if (isMounted) setHasGLBModels(false);
@@ -90,12 +133,22 @@ export default function NexusCharacter() {
       setCharacterState(currentState);
     }
 
-    // Evaluate transition parameters for frame-rate interpolation
+    // Evaluate transition parameters, but only push a React state update when the
+    // primary/secondary model pairing actually changes (a handful of times across
+    // the whole scroll) - NOT on every frame's continuous dissolveProgress value.
+    // GLBHeadInstance only needs the boolean `visible` derived from this; any future
+    // per-frame dissolve uniform should be read via useStore.getState() inside its
+    // own useFrame, the same pattern used by CameraRig/MetallicHeroObject.
     const transition = getCharacterTransition(scrollProgress);
-    setTransitionData(transition);
+    const transitionKey = `${transition.primaryModel}|${transition.secondaryModel ?? ''}`;
+    if (transitionKey !== lastTransitionKeyRef.current) {
+      lastTransitionKeyRef.current = transitionKey;
+      setTransitionData(transition);
+    }
 
-    // Telemetry dispatch for DebugHUD if renderer info is available
-    if (typeof window !== 'undefined' && state.gl.info) {
+    // Telemetry dispatch for DebugHUD - skipped entirely unless ?debug3d=1 is
+    // active, to avoid allocating + dispatching a CustomEvent on every frame.
+    if (isDebugActive && state.gl.info) {
       const detail = {
         drawCalls: state.gl.info.render.calls,
         triangles: state.gl.info.render.triangles,
@@ -127,8 +180,15 @@ export default function NexusCharacter() {
           />
         </React.Suspense>
       ) : (
-        /* Fallback for Pre-GLB Phase: NexusPrototype handles abstract visual representation */
-        <NexusPrototype />
+        /* Fallback for Pre-GLB Phase: NexusPrototype + HolographicConceptDisplay integrate official 2D concept arts into 3D */
+        <group>
+          <NexusPrototype />
+          {/* Isolated Suspense: the ~10MB concept-art texture set must never block
+              the procedural hero object / lights / neural systems from rendering. */}
+          <React.Suspense fallback={null}>
+            <HolographicConceptDisplay />
+          </React.Suspense>
+        </group>
       )}
     </group>
   );

@@ -13,10 +13,11 @@ export default function NeuralCore() {
   const devicePerformance = useStore((state) => state.devicePerformance);
 
   // Dynamic node count based on Performance Tier (Fix C)
+  // 'unknown' (pre-detection) must stay conservative, matching DPR/postprocessing defaults.
   const nodeCount = useMemo(() => {
-    if (devicePerformance === 'low') return 70;
+    if (devicePerformance === 'low' || devicePerformance === 'unknown') return 70;
     if (devicePerformance === 'medium') return 120;
-    return 180; // High / Unknown
+    return 180; // High only
   }, [devicePerformance]);
 
   // Memoized buffer positions (Recalculated ONLY when nodeCount / devicePerformance changes)
