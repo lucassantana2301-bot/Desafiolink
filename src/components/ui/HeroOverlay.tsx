@@ -1,13 +1,46 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '@/store/useStore';
-import { getActiveScene } from '@/data/scenes';
+import { SCENES } from '@/data/scenes';
 
 export default function HeroOverlay() {
-  const scrollProgress = useStore((state) => state.scrollProgress);
-  const activeScene = getActiveScene(scrollProgress);
+  // Slow Data: React state re-renders ONLY when activeSceneId changes (Fix 04)
+  const activeSceneId = useStore((state) => state.activeSceneId);
+  const activeScene = SCENES.find((s) => s.id === activeSceneId) || SCENES[0];
+
+  // Fast Data DOM Refs (Fix 04 - Zero React re-renders per frame!)
+  const progressBarRef = useRef<HTMLDivElement>(null);
+  const progressTextRef = useRef<HTMLSpanElement>(null);
+  const coordTextRef = useRef<HTMLDivElement>(null);
+  const loadTextRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Direct store subscription for Fast Data (60fps DOM updates without React reconciler)
+    const unsubscribe = useStore.subscribe((state) => {
+      const scrollProgress = state.scrollProgress;
+      const pct = (scrollProgress * 100).toFixed(1);
+
+      if (progressBarRef.current) {
+        progressBarRef.current.style.width = `${pct}%`;
+      }
+      if (progressTextRef.current) {
+        progressTextRef.current.innerText = `${pct}%`;
+      }
+      if (coordTextRef.current) {
+        const x = (Math.sin(scrollProgress * Math.PI) * 0.42).toFixed(2);
+        const y = (Math.cos(scrollProgress * Math.PI) * 0.18).toFixed(2);
+        coordTextRef.current.innerText = `COORD [X: ${x} / Y: ${y}]`;
+      }
+      if (loadTextRef.current) {
+        const load = (scrollProgress * 84 + 12).toFixed(1);
+        loadTextRef.current.innerText = `COGNITIVE_LOAD: ${load}%`;
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   return (
     <div className="fixed inset-0 z-10 pointer-events-none flex flex-col justify-between p-6 md:p-14 select-none">
@@ -18,25 +51,31 @@ export default function HeroOverlay() {
       <div className="absolute top-8 right-8 font-mono text-[10px] text-white/30 tracking-widest uppercase hidden md:block">
         VISION // 01 | MEMORY // 02 | REASONING // 03
       </div>
-      <div className="absolute bottom-8 left-8 font-mono text-[10px] text-white/30 tracking-widest uppercase">
-        COGNITIVE_LOAD: {(scrollProgress * 84 + 12).toFixed(1)}%
+      <div
+        ref={loadTextRef}
+        className="absolute bottom-8 left-8 font-mono text-[10px] text-white/30 tracking-widest uppercase"
+      >
+        COGNITIVE_LOAD: 12.0%
       </div>
-      <div className="absolute bottom-8 right-8 font-mono text-[10px] text-white/30 tracking-widest uppercase hidden sm:block">
-        COORD [X: {(Math.sin(scrollProgress * Math.PI) * 0.42).toFixed(2)} / Y: {(Math.cos(scrollProgress * Math.PI) * 0.18).toFixed(2)}]
+      <div
+        ref={coordTextRef}
+        className="absolute bottom-8 right-8 font-mono text-[10px] text-white/30 tracking-widest uppercase hidden sm:block"
+      >
+        COORD [X: 0.00 / Y: 0.18]
       </div>
 
       {/* Top Spacer for Navbar */}
       <div className="h-16" />
 
-      {/* Narrative Editorial Text Container */}
+      {/* Narrative Editorial Text Container (Slow Data) */}
       <div className="flex-1 flex flex-col justify-center items-start max-w-5xl">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeScene.id}
-            initial={{ opacity: 0, y: 25, filter: 'blur(4px)' }}
-            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-            exit={{ opacity: 0, y: -20, filter: 'blur(4px)' }}
-            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
             className="space-y-4"
           >
             {/* Scene Subtitle / Tag */}
@@ -58,7 +97,7 @@ export default function HeroOverlay() {
         </AnimatePresence>
       </div>
 
-      {/* Real-time Progress Bar & Scene Telemetry Footer */}
+      {/* Fast Data Progress Bar & Scene Telemetry Footer */}
       <div className="flex justify-between items-end border-t border-white/10 pt-4 font-mono text-[11px] text-gray-400 tracking-widest uppercase">
         <div className="flex items-center space-x-4">
           <span className="text-gray-600">SCENE:</span>
@@ -70,14 +109,15 @@ export default function HeroOverlay() {
         <div className="w-48 md:w-64 space-y-1.5">
           <div className="flex justify-between text-[10px]">
             <span className="text-gray-500">SYNAPTIC_PROGRESS</span>
-            <span className="text-[#00F0FF] font-bold">
-              {(scrollProgress * 100).toFixed(1)}%
+            <span ref={progressTextRef} className="text-[#00F0FF] font-bold">
+              0.0%
             </span>
           </div>
           <div className="w-full h-[2px] bg-white/10 overflow-hidden">
             <div
+              ref={progressBarRef}
               className="h-full bg-[#00F0FF] transition-all duration-75 shadow-[0_0_8px_#00F0FF]"
-              style={{ width: `${scrollProgress * 100}%` }}
+              style={{ width: '0%' }}
             />
           </div>
         </div>

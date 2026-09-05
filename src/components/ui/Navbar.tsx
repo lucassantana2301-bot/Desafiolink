@@ -1,10 +1,21 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useStore } from '@/store/useStore';
 
 export default function Navbar() {
-  const scrollProgress = useStore((state) => state.scrollProgress);
+  const progressBarRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Direct store subscription for Fast Data (60fps DOM updates without React re-renders)
+    const unsubscribe = useStore.subscribe((state) => {
+      if (progressBarRef.current) {
+        progressBarRef.current.style.width = `${state.scrollProgress * 100}%`;
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   return (
     <header className="fixed top-0 left-0 w-full z-50 px-6 py-6 flex items-center justify-between pointer-events-auto mix-blend-difference select-none">
@@ -30,8 +41,9 @@ export default function Navbar() {
         <span className="text-gray-500 text-[10px]">SYS_ONLINE</span>
         <div className="w-12 h-[2px] bg-white/20 relative overflow-hidden">
           <div
+            ref={progressBarRef}
             className="h-full bg-[#00F0FF]"
-            style={{ width: `${scrollProgress * 100}%` }}
+            style={{ width: '0%' }}
           />
         </div>
       </div>

@@ -6,8 +6,9 @@
     "title": "WHAT MAKES US HUMAN?",
     "subtitle": "NEXUS // HUMAN STUDY 01",
     "description": "Uma silhueta biomecânica surge lentamente da obscuridade. Iluminação lateral rasteira e partículas atmosféricas.",
-    "cameraPosition": [0, 0, 6.0],
+    "cameraPosition": [0.0, 0.0, 6.0],
     "cameraFov": 45,
+    "cameraTarget": [0.0, 0.0, 0.0],
     "objectState": "human-silhouette",
     "shaderEffect": "subsurface-dark"
   },
@@ -18,8 +19,9 @@
     "title": "BENEATH THE SKIN",
     "subtitle": "NEXUS // BIOMECHANICAL SHIFT",
     "description": "A camada exterior abre espaço para estruturas geométricas e wireframe interno. O sintético emerge do biológico.",
-    "cameraPosition": [0, 0.2, 3.8],
+    "cameraPosition": [0.0, 0.2, 3.8],
     "cameraFov": 42,
+    "cameraTarget": [0.0, 0.1, 0.0],
     "objectState": "material-transition",
     "shaderEffect": "wireframe-blend"
   },
@@ -32,6 +34,7 @@
     "description": "Desmontagem explodida das camadas protéticas. A inteligência artificial assume forma física e peso estrutural.",
     "cameraPosition": [0.8, 0.6, 4.5],
     "cameraFov": 40,
+    "cameraTarget": [0.0, 0.0, 0.0],
     "objectState": "exploded-biomech",
     "shaderEffect": "titanium-pbr"
   },
@@ -42,8 +45,9 @@
     "title": "BUT CAN IT UNDERSTAND?",
     "subtitle": "NEXUS // NEURAL CORE ORIGIN",
     "description": "As conchas externas se expandem ao máximo, revelando o núcleo cérebro-neural pulsante em alta densidade de energia.",
-    "cameraPosition": [0, 0, 2.2],
+    "cameraPosition": [0.0, 0.0, 2.2],
     "cameraFov": 50,
+    "cameraTarget": [0.0, 0.0, 0.0],
     "objectState": "core-reveal",
     "shaderEffect": "synaptic-pulse"
   },
@@ -54,8 +58,9 @@
     "title": "ARE WE STILL DIFFERENT?",
     "subtitle": "NEXUS // SYNAPTIC MATRIX",
     "description": "A câmera penetra o horizonte de eventos do núcleo. Imersão completa dentro de uma matriz neural 3D de sinapses.",
-    "cameraPosition": [0, 0, -2.5],
+    "cameraPosition": [0.0, 0.0, -2.5],
     "cameraFov": 65,
+    "cameraTarget": [0.0, 0.0, -5.0],
     "objectState": "inside-matrix",
     "shaderEffect": "volumetric-nodes"
   },
@@ -66,8 +71,9 @@
     "title": "NEXUS",
     "subtitle": "THE LINE BETWEEN HUMAN AND MACHINE IS DISAPPEARING.",
     "description": "Convergência final das partículas neurais na entidade híbrida. O estado de fusão entre biologia e inteligência sintética.",
-    "cameraPosition": [0, 0, 5.2],
+    "cameraPosition": [0.0, 0.0, 5.2],
     "cameraFov": 45,
+    "cameraTarget": [0.0, 0.0, 0.0],
     "objectState": "hybrid-reborn",
     "shaderEffect": "monochrome-glow"
   }

@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic';
 import SmoothScroll from '@/components/motion/SmoothScroll';
 import Navbar from '@/components/ui/Navbar';
 import HeroOverlay from '@/components/ui/HeroOverlay';
+import LoadingOverlay from '@/components/ui/LoadingOverlay';
 
 // Dynamic import for WebGL Canvas with SSR disabled
 const SceneCanvas = dynamic(() => import('@/components/three/SceneCanvas'), {
@@ -15,6 +16,9 @@ export default function Home() {
     <main className="relative min-h-screen bg-[#050505] text-white">
       {/* 3D WebGL Canvas Viewport (Fixed Fullscreen) */}
       <SceneCanvas />
+
+      {/* Loading Calibration System (Fix 08) */}
+      <LoadingOverlay />
 
       {/* 2D HUD Navigation and Narrative Telemetry */}
       <Navbar />

@@ -5,29 +5,39 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useStore } from '@/store/useStore';
 
+// Deterministic pseudo-random generator for React pure rendering
+function pseudoRandom(seed: number) {
+  const x = Math.sin(seed) * 10000;
+  return x - Math.floor(x);
+}
+
 export default function NeuralWorld() {
   const pointsRef = useRef<THREE.Points>(null);
   const linesRef = useRef<THREE.LineSegments>(null);
   const worldGroupRef = useRef<THREE.Group>(null);
 
-  // Generate a 3D matrix tunnel of neural synaptic nodes
-  const count = 600;
+  const devicePerformance = useStore((state) => state.devicePerformance);
+
+  const count = useMemo(() => {
+    if (devicePerformance === 'low') return 100;
+    if (devicePerformance === 'medium') return 300;
+    return 600;
+  }, [devicePerformance]);
+
   const { positions, linePositions } = useMemo(() => {
     const pos = new Float32Array(count * 3);
     const linePosList: number[] = [];
 
     for (let i = 0; i < count; i++) {
-      // Cylinder / tunnel distribution surrounding camera path
-      const radius = 1.5 + Math.random() * 4.5;
-      const angle = Math.random() * Math.PI * 2;
-      const z = (Math.random() - 0.5) * 20; // 20 units deep tunnel
+      const radius = 1.5 + pseudoRandom(i * 3 + 1) * 4.5;
+      const angle = pseudoRandom(i * 3 + 2) * Math.PI * 2;
+      const z = (pseudoRandom(i * 3 + 3) - 0.5) * 20;
 
       pos[i * 3] = Math.cos(angle) * radius;
       pos[i * 3 + 1] = Math.sin(angle) * radius;
       pos[i * 3 + 2] = z;
     }
 
-    // Connect close neighbors within tunnel
     for (let i = 0; i < count; i += 3) {
       for (let j = i + 1; j < count; j += 3) {
         const dx = pos[i * 3] - pos[j * 3];
@@ -48,13 +58,19 @@ export default function NeuralWorld() {
       positions: pos,
       linePositions: new Float32Array(linePosList),
     };
-  }, []);
+  }, [count]);
 
-  useFrame((state, delta) => {
+  useFrame((state) => {
     const scrollProgress = useStore.getState().scrollProgress;
     const time = state.clock.getElapsedTime();
 
-    // Fade-in neural matrix tunnel specifically in Scene 05 (scrollProgress 0.65 to 0.88)
+    const isVisible = scrollProgress >= 0.55 && scrollProgress <= 0.95;
+    if (worldGroupRef.current) {
+      worldGroupRef.current.visible = isVisible;
+    }
+
+    if (!isVisible) return;
+
     let opacity = 0;
     if (scrollProgress >= 0.58 && scrollProgress <= 0.92) {
       if (scrollProgress < 0.65) {

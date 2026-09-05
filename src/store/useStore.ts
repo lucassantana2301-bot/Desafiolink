@@ -6,9 +6,11 @@ export const useStore = create<StoreState>((set) => ({
   activeSceneId: 'scene-01',
   isLoaded: false,
   devicePerformance: 'high',
+  prefersReducedMotion: false,
 
   setScrollProgress: (scrollProgress) => set({ scrollProgress }),
   setActiveSceneId: (activeSceneId) => set({ activeSceneId }),
   setIsLoaded: (isLoaded) => set({ isLoaded }),
   setDevicePerformance: (devicePerformance) => set({ devicePerformance }),
+  setPrefersReducedMotion: (prefersReducedMotion) => set({ prefersReducedMotion }),
 }));

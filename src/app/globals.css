@@ -2,7 +2,7 @@
 
 :root {
   --background: #050505;
-  --foreground: #F5F7FA;
+  --foreground: #F8FAFC;
   --font-mono: 'JetBrains Mono', monospace;
 }
 
@@ -38,7 +38,7 @@ html.lenis, html.lenis body {
   pointer-events: none;
 }
 
-/* Scrollbar Customization */
+/* Scrollbar Customization - NEXUS Cyan */
 ::-webkit-scrollbar {
   width: 4px;
 }
@@ -48,5 +48,11 @@ html.lenis, html.lenis body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #FF5500;
+  background: #00F0FF;
+}
+
+/* Selection Color */
+::selection {
+  background-color: #00F0FF;
+  color: #050505;
 }

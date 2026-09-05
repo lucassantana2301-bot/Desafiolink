@@ -13,8 +13,8 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'JCS Metalúrgica | Engenharia Industrial de Precisão 3D',
-  description: 'Plataforma cinematográfica 3D e configurador de precisão da JCS Metalúrgica. Usinagem de alta tolerância, forjaria industrial e engenharia avançada.',
+  title: 'NEXUS — Experimental 3D Cinematic Experience',
+  description: 'An experimental 3D WebGL cinematic journey exploring the dissolving boundary between human and machine intelligence. Where does human end and machine begin?',
 };
 
 export default function RootLayout({
@@ -23,8 +23,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR" className={`${inter.variable} ${jetbrainsMono.variable} bg-[#050505] text-white`}>
-      <body className="antialiased selection:bg-[#FF5500] selection:text-white">
+    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable} bg-[#050505] text-white`}>
+      <body className="antialiased selection:bg-[#00F0FF] selection:text-[#050505]">
         {children}
       </body>
     </html>

@@ -1,21 +1,37 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useStore } from '@/store/useStore';
 
+// Deterministic pseudo-random generator for React pure rendering
+function pseudoRandom(seed: number) {
+  const x = Math.sin(seed) * 10000;
+  return x - Math.floor(x);
+}
+
 export default function LightsEnvironment() {
   const particlesRef = useRef<THREE.Points>(null);
+  const devicePerformance = useStore((state) => state.devicePerformance);
 
-  // Generate subtle atmospheric particles
-  const particleCount = 350;
-  const positions = new Float32Array(particleCount * 3);
-  for (let i = 0; i < particleCount; i++) {
-    positions[i * 3] = (Math.random() - 0.5) * 12;
-    positions[i * 3 + 1] = (Math.random() - 0.5) * 12;
-    positions[i * 3 + 2] = (Math.random() - 0.5) * 12;
-  }
+  // Dynamic particle count based on performance tier
+  const particleCount = useMemo(() => {
+    if (devicePerformance === 'low') return 50;
+    if (devicePerformance === 'medium') return 150;
+    return 350;
+  }, [devicePerformance]);
+
+  // Pure memoized particle buffer positions
+  const positions = useMemo(() => {
+    const pos = new Float32Array(particleCount * 3);
+    for (let i = 0; i < particleCount; i++) {
+      pos[i * 3] = (pseudoRandom(i * 3 + 1) - 0.5) * 12;
+      pos[i * 3 + 1] = (pseudoRandom(i * 3 + 2) - 0.5) * 12;
+      pos[i * 3 + 2] = (pseudoRandom(i * 3 + 3) - 0.5) * 12;
+    }
+    return pos;
+  }, [particleCount]);
 
   useFrame((state, delta) => {
     const scrollProgress = useStore.getState().scrollProgress;
@@ -39,7 +55,6 @@ export default function LightsEnvironment() {
         position={[-6, 4, 5]}
         intensity={3.0}
         color="#F8FAFC"
-        castShadow
       />
 
       {/* Subtle Cyan Rim Light */}
@@ -48,7 +63,7 @@ export default function LightsEnvironment() {
       {/* Deep Background Fill */}
       <pointLight position={[0, 6, -5]} intensity={1.5} color="#1E232B" />
 
-      {/* Volumetric Atmosphere Dust */}
+      {/* Volumetric Atmosphere Dust Particles */}
       <points ref={particlesRef}>
         <bufferGeometry>
           <bufferAttribute

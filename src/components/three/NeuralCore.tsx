@@ -18,7 +18,6 @@ export default function NeuralCore() {
 
     const radius = 0.75;
     for (let i = 0; i < nodeCount; i++) {
-      // Fibonacci sphere distribution for uniform spherical core
       const phi = Math.acos(-1 + (2 * i) / nodeCount);
       const theta = Math.sqrt(nodeCount * Math.PI) * phi;
 
@@ -31,7 +30,6 @@ export default function NeuralCore() {
       pos[i * 3 + 2] = z;
     }
 
-    // Connect nearby nodes with synaptic line segments
     for (let i = 0; i < nodeCount; i++) {
       for (let j = i + 1; j < nodeCount; j++) {
         const dx = pos[i * 3] - pos[j * 3];
@@ -58,7 +56,14 @@ export default function NeuralCore() {
     const scrollProgress = useStore.getState().scrollProgress;
     const time = state.clock.getElapsedTime();
 
-    // Neural Core Activation Curve (Scenes 04 & 05: scrollProgress 0.50 to 0.88)
+    // GPU Culling (Fix 05): Hide NeuralCore when outside relevance range
+    const isVisible = scrollProgress >= 0.40 && scrollProgress <= 0.92;
+    if (coreGroupRef.current) {
+      coreGroupRef.current.visible = isVisible;
+    }
+
+    if (!isVisible) return;
+
     let coreActivity = 0;
     if (scrollProgress >= 0.45 && scrollProgress <= 0.90) {
       coreActivity = Math.sin(((scrollProgress - 0.45) / 0.45) * Math.PI);
@@ -67,8 +72,6 @@ export default function NeuralCore() {
     if (coreGroupRef.current) {
       coreGroupRef.current.rotation.y = time * 0.4;
       coreGroupRef.current.rotation.x = time * 0.2;
-
-      // Scale core up as camera approaches in Scene 04
       const scale = 0.8 + coreActivity * 0.6;
       coreGroupRef.current.scale.setScalar(scale);
     }
