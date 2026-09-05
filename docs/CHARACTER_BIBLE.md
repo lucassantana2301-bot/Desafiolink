@@ -24,3 +24,16 @@ graph LR
 3. **`03_HYBRID` (Scroll: 0.32 → 0.50):** Divisão 50% humano / 50% máquina com estrutura biomecânica e cerâmica fosca.
 4. **`04_ANDROID` (Scroll: 0.50 → 0.88):** Estrutura sintética completa, placas de titânio escuro e imersão no núcleo neural.
 5. **`05_NEXUS_FINAL` (Scroll: 0.88 → 1.00):** Convergência final das partículas neurais na entidade híbrida renascida. O limiar entre humano e máquina desaparece por completo.
+
+---
+
+## 🎨 NEXUS CHARACTER REFERENCE SET (APPROVED)
+
+Os cinco arquivos oficiais de concept art formam o conjunto de referência definitivo para a próxima fase de produção e modelagem 3D:
+
+- `public/images/nexus/nexus-human.png` — **PRIMARY IDENTITY REFERENCE** (`01_HUMAN`, Master Reference oficial do protagonista).
+- `public/images/nexus/nexus-skin-reveal.png` — **TRANSFORMATION REFERENCE** (`02_SKIN_REVEAL`, referência de abertura cirúrgica e exposição sub-cutânea).
+- `public/images/nexus/nexus-hybrid.png` — **HUMAN/MACHINE MATERIAL REFERENCE** (`03_HYBRID`, transição de materiais biológicos para cerâmica fosca e titânio).
+- `public/images/nexus/nexus-android.png` — **MECHANICAL STRUCTURE REFERENCE** (`04_ANDROID`, arquitetura estrutural mecânica, titânio escuro e joints).
+- `public/images/nexus/nexus-final.png` — **FINAL CONVERGENCE REFERENCE** (`05_NEXUS_FINAL`, convergência final e reconstrução da identidade humana sobre uma arquitetura sintética).
+

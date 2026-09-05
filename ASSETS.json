@@ -43,5 +43,42 @@
     }
   ],
   "videos": [],
-  "images": []
+  "images": [
+    {
+      "id": "NEXUS_HUMAN_CONCEPT",
+      "name": "NEXUS State 01 - Human Master Reference",
+      "path": "/images/nexus/nexus-human.png",
+      "type": "concept-art",
+      "status": "approved",
+      "purpose": "Master visual reference for the NEXUS protagonist and future 3D character production."
+    },
+    {
+      "id": "NEXUS_SKIN_REVEAL_CONCEPT",
+      "name": "NEXUS State 02 - Skin Reveal Concept",
+      "path": "/images/nexus/nexus-skin-reveal.png",
+      "type": "concept-art",
+      "status": "approved"
+    },
+    {
+      "id": "NEXUS_HYBRID_CONCEPT",
+      "name": "NEXUS State 03 - Hybrid Concept",
+      "path": "/images/nexus/nexus-hybrid.png",
+      "type": "concept-art",
+      "status": "approved"
+    },
+    {
+      "id": "NEXUS_ANDROID_CONCEPT",
+      "name": "NEXUS State 04 - Android Structure Concept",
+      "path": "/images/nexus/nexus-android.png",
+      "type": "concept-art",
+      "status": "approved"
+    },
+    {
+      "id": "NEXUS_FINAL_CONCEPT",
+      "name": "NEXUS State 05 - Nexus Final Reborn Concept",
+      "path": "/images/nexus/nexus-final.png",
+      "type": "concept-art",
+      "status": "approved"
+    }
+  ]
 }
