@@ -7,7 +7,6 @@ import * as THREE from 'three';
 import { useStore } from '@/store/useStore';
 import { getCharacterState } from '@/lib/characterStateMachine';
 import { getCharacterTransition, ModelType } from '@/utils/nexusTransitions';
-import NexusPrototype from './NexusPrototype';
 import HolographicConceptDisplay from './HolographicConceptDisplay';
 
 // Paths for the official 3D GLB Models (Production Assets)
@@ -162,7 +161,18 @@ export default function NexusCharacter() {
   return (
     <group ref={containerRef} position={[0, 0, 0]}>
       {hasGLBModels ? (
-        <React.Suspense fallback={<NexusPrototype />}>
+        // Fallback is itself wrapped in its own Suspense: HolographicConceptDisplay's
+        // useTexture calls can suspend independently (e.g. cold cache on a slow
+        // connection right as hasGLBModels flips true), and without this inner
+        // boundary that suspense would bubble past this one to the canvas-root
+        // Suspense in SceneCanvas.tsx, blanking CameraRig/Lights/NeuralCore/NeuralWorld
+        // too - the exact cascade the isolated-Suspense fix in PROJECT_STATUS.md #8
+        // was meant to prevent.
+        <React.Suspense fallback={
+          <React.Suspense fallback={null}>
+            <HolographicConceptDisplay />
+          </React.Suspense>
+        }>
           <GLBHeadInstance
             modelType="human"
             path={GLB_MODEL_PATHS.human}
@@ -180,15 +190,10 @@ export default function NexusCharacter() {
           />
         </React.Suspense>
       ) : (
-        /* Fallback for Pre-GLB Phase: NexusPrototype + HolographicConceptDisplay integrate official 2D concept arts into 3D */
-        <group>
-          <NexusPrototype />
-          {/* Isolated Suspense: the ~10MB concept-art texture set must never block
-              the procedural hero object / lights / neural systems from rendering. */}
-          <React.Suspense fallback={null}>
-            <HolographicConceptDisplay />
-          </React.Suspense>
-        </group>
+        /* Cinematic Protagonist Integration: Approved official concept art as central hero */
+        <React.Suspense fallback={null}>
+          <HolographicConceptDisplay />
+        </React.Suspense>
       )}
     </group>
   );

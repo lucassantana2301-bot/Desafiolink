@@ -5,7 +5,6 @@ import { useFrame } from '@react-three/fiber';
 import { useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 import { useStore } from '@/store/useStore';
-import { getCharacterTransition } from '@/utils/nexusTransitions';
 
 // Paths to the 5 official concept art images in public/images/nexus/
 const CONCEPT_IMAGE_PATHS = {
@@ -17,11 +16,57 @@ const CONCEPT_IMAGE_PATHS = {
 } as const;
 
 /**
- * Holographic 3D Concept Plane Component
- * Renders textured plane with subtle scanline holographic shaders and smooth opacity crossfades.
+ * Calculates continuous smooth crossfade weights (0.0 to 1.0) for all 5 images
+ * across the entire scroll progress range [0.0, 1.0].
+ */
+function getConceptWeights(p: number) {
+  const clamped = Math.max(0, Math.min(1, p));
+  let wHuman = 0;
+  let wSkin = 0;
+  let wHybrid = 0;
+  let wAndroid = 0;
+  let wFinal = 0;
+
+  if (clamped < 0.15) {
+    // Scene 01: Human Pure Form
+    wHuman = 1.0;
+  } else if (clamped < 0.32) {
+    // Scene 02: Human -> Skin Reveal
+    const t = (clamped - 0.15) / 0.17;
+    wHuman = 1.0 - t;
+    wSkin = t;
+  } else if (clamped < 0.48) {
+    // Scene 03: Skin Reveal -> Hybrid
+    const t = (clamped - 0.32) / 0.16;
+    wSkin = 1.0 - t;
+    wHybrid = t;
+  } else if (clamped < 0.75) {
+    // Scene 04: Hybrid -> Android
+    const t = (clamped - 0.48) / 0.27;
+    wHybrid = 1.0 - t;
+    wAndroid = t;
+  } else if (clamped < 0.88) {
+    // Scene 05: Android Core
+    wAndroid = 1.0;
+  } else {
+    // Scene 06: Android -> Nexus Final Convergence
+    const t = (clamped - 0.88) / 0.12;
+    wAndroid = 1.0 - t;
+    wFinal = t;
+  }
+
+  return { wHuman, wSkin, wHybrid, wAndroid, wFinal };
+}
+
+/**
+ * Holographic 3D Concept Display Component
+ * Seamlessly links and blends all 5 official transformation concepts in 3D space
+ * with scanlines and dynamic holographic projection reticles.
  */
 export default function HolographicConceptDisplay() {
   const groupRef = useRef<THREE.Group>(null);
+  const scanlineRef = useRef<THREE.Mesh>(null);
+
   const meshHumanRef = useRef<THREE.Mesh>(null);
   const meshSkinRef = useRef<THREE.Mesh>(null);
   const meshHybridRef = useRef<THREE.Mesh>(null);
@@ -39,70 +84,43 @@ export default function HolographicConceptDisplay() {
 
   useFrame((state, delta) => {
     const scrollProgress = useStore.getState().scrollProgress;
-    const transition = getCharacterTransition(scrollProgress);
     const time = state.clock.getElapsedTime();
 
-    // Floating breathing effect
+    // Floating breathing motion in sync with the scene
     if (groupRef.current) {
-      groupRef.current.position.y = Math.sin(time * 1.2) * 0.04;
-      groupRef.current.rotation.y = Math.sin(time * 0.5) * 0.05;
+      groupRef.current.position.y = 0.1 + Math.sin(time * 1.2) * 0.03;
+      groupRef.current.rotation.y = Math.sin(time * 0.6) * 0.04;
     }
 
-    // Hide inside Scene 05 Neural World matrix to preserve culling
-    const isVisible = scrollProgress <= 0.65 || scrollProgress >= 0.86;
-    if (groupRef.current) {
-      groupRef.current.visible = isVisible;
-    }
-    if (!isVisible) return;
-
-    // Smooth opacity targets based on active narrative state
-    let opHuman = 0;
-    let opSkin = 0;
-    let opHybrid = 0;
-    let opAndroid = 0;
-    let opFinal = 0;
-
-    switch (transition.activeState) {
-      case '01_HUMAN':
-        opHuman = 0.95;
-        break;
-      case '02_SKIN_REVEAL':
-        opHuman = 1.0 - transition.dissolveProgress;
-        opSkin = transition.dissolveProgress;
-        break;
-      case '03_HYBRID':
-        opHybrid = 0.95;
-        break;
-      case '04_ANDROID':
-        opHybrid = 1.0 - transition.dissolveProgress;
-        opAndroid = transition.dissolveProgress;
-        break;
-      case '05_NEXUS_FINAL':
-        opFinal = 0.95;
-        break;
+    // Dynamic scanning laser sweep across the holographic plane
+    if (scanlineRef.current) {
+      scanlineRef.current.position.y = ((time * 0.8) % 2.4) - 1.2;
     }
 
-    // Apply smooth damp interpolation for opacity
-    const damp = (matRef: React.RefObject<THREE.Mesh | null>, targetOp: number) => {
-      if (matRef.current) {
-        const mat = matRef.current.material as THREE.MeshBasicMaterial;
-        mat.opacity = THREE.MathUtils.lerp(mat.opacity, targetOp, delta * 5);
-        matRef.current.visible = mat.opacity > 0.01;
+    // Compute continuous seamless weights
+    const weights = getConceptWeights(scrollProgress);
+
+    // Smooth lerp for visual opacity
+    const applyOpacity = (meshRef: React.RefObject<THREE.Mesh | null>, target: number) => {
+      if (meshRef.current) {
+        const mat = meshRef.current.material as THREE.MeshBasicMaterial;
+        mat.opacity = THREE.MathUtils.lerp(mat.opacity, target * 0.95, delta * 8);
+        meshRef.current.visible = mat.opacity > 0.005;
       }
     };
 
-    damp(meshHumanRef, opHuman);
-    damp(meshSkinRef, opSkin);
-    damp(meshHybridRef, opHybrid);
-    damp(meshAndroidRef, opAndroid);
-    damp(meshFinalRef, opFinal);
+    applyOpacity(meshHumanRef, weights.wHuman);
+    applyOpacity(meshSkinRef, weights.wSkin);
+    applyOpacity(meshHybridRef, weights.wHybrid);
+    applyOpacity(meshAndroidRef, weights.wAndroid);
+    applyOpacity(meshFinalRef, weights.wFinal);
   });
 
   return (
-    <group ref={groupRef} position={[0, 0.1, 0.2]}>
+    <group ref={groupRef} position={[0, 0.08, 0.05]}>
       {/* 01_HUMAN Plane */}
       <mesh ref={meshHumanRef} position={[0, 0, 0]}>
-        <planeGeometry args={[2.2, 2.2]} />
+        <planeGeometry args={[2.5, 2.5]} />
         <meshBasicMaterial
           map={texHuman}
           transparent
@@ -113,8 +131,8 @@ export default function HolographicConceptDisplay() {
       </mesh>
 
       {/* 02_SKIN_REVEAL Plane */}
-      <mesh ref={meshSkinRef} position={[0, 0, 0.01]}>
-        <planeGeometry args={[2.2, 2.2]} />
+      <mesh ref={meshSkinRef} position={[0, 0, 0.002]}>
+        <planeGeometry args={[2.5, 2.5]} />
         <meshBasicMaterial
           map={texSkin}
           transparent
@@ -125,8 +143,8 @@ export default function HolographicConceptDisplay() {
       </mesh>
 
       {/* 03_HYBRID Plane */}
-      <mesh ref={meshHybridRef} position={[0, 0, 0.02]}>
-        <planeGeometry args={[2.2, 2.2]} />
+      <mesh ref={meshHybridRef} position={[0, 0, 0.004]}>
+        <planeGeometry args={[2.5, 2.5]} />
         <meshBasicMaterial
           map={texHybrid}
           transparent
@@ -137,8 +155,8 @@ export default function HolographicConceptDisplay() {
       </mesh>
 
       {/* 04_ANDROID Plane */}
-      <mesh ref={meshAndroidRef} position={[0, 0, 0.03]}>
-        <planeGeometry args={[2.2, 2.2]} />
+      <mesh ref={meshAndroidRef} position={[0, 0, 0.006]}>
+        <planeGeometry args={[2.5, 2.5]} />
         <meshBasicMaterial
           map={texAndroid}
           transparent
@@ -149,8 +167,8 @@ export default function HolographicConceptDisplay() {
       </mesh>
 
       {/* 05_NEXUS_FINAL Plane */}
-      <mesh ref={meshFinalRef} position={[0, 0, 0.04]}>
-        <planeGeometry args={[2.2, 2.2]} />
+      <mesh ref={meshFinalRef} position={[0, 0, 0.008]}>
+        <planeGeometry args={[2.5, 2.5]} />
         <meshBasicMaterial
           map={texFinal}
           transparent
@@ -160,11 +178,19 @@ export default function HolographicConceptDisplay() {
         />
       </mesh>
 
-      {/* Futuristic Holographic Framing Reticle */}
-      <mesh position={[0, 0, -0.05]}>
-        <planeGeometry args={[2.35, 2.35]} />
-        <meshBasicMaterial color="#00F0FF" wireframe transparent opacity={0.12} />
+      {/* Subtle Holographic Laser Scanline */}
+      <mesh ref={scanlineRef} position={[0, 0, 0.015]}>
+        <planeGeometry args={[2.5, 0.02]} />
+        <meshBasicMaterial
+          color="#00F0FF"
+          transparent
+          opacity={0.25}
+          side={THREE.DoubleSide}
+          depthWrite={false}
+          blending={THREE.AdditiveBlending}
+        />
       </mesh>
     </group>
   );
 }
+

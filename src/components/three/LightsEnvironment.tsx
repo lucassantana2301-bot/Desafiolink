@@ -45,7 +45,10 @@ export default function LightsEnvironment() {
       particlesRef.current.rotation.y += delta * 0.03;
       particlesRef.current.rotation.x += delta * 0.01;
       
-      const opacity = 0.2 + Math.sin(scrollProgress * Math.PI) * 0.3;
+      let opacity = 0.2 + Math.sin(scrollProgress * Math.PI) * 0.25;
+      if (scrollProgress >= 0.96) {
+        opacity = Math.max(0.02, opacity * (1 - (scrollProgress - 0.96) * 20));
+      }
       (particlesRef.current.material as THREE.PointsMaterial).opacity = opacity;
     }
 

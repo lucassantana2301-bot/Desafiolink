@@ -6,6 +6,7 @@ import Navbar from '@/components/ui/Navbar';
 import HeroOverlay from '@/components/ui/HeroOverlay';
 import LoadingOverlay from '@/components/ui/LoadingOverlay';
 import DebugHUD from '@/components/ui/DebugHUD';
+import CustomCursor from '@/components/ui/CustomCursor';
 
 // Dynamic import for WebGL Canvas with SSR disabled
 const SceneCanvas = dynamic(() => import('@/components/three/SceneCanvas'), {
@@ -14,11 +15,17 @@ const SceneCanvas = dynamic(() => import('@/components/three/SceneCanvas'), {
 
 export default function Home() {
   return (
-    <main className="relative min-h-screen bg-[#050505] text-white">
+    <main className="relative min-h-screen bg-[#050505] text-white selection:bg-[#00F0FF] selection:text-black">
+      {/* Precision Contextual Technical Cursor (Desktop only) */}
+      <CustomCursor />
+
+      {/* Subtle Background Tactical Grid for Spatial Parallax */}
+      <div className="fixed inset-0 z-0 pointer-events-none opacity-[0.03] bg-[radial-gradient(#00F0FF_1px,transparent_1px)] [background-size:32px_32px]" />
+
       {/* 3D WebGL Canvas Viewport (Fixed Fullscreen) */}
       <SceneCanvas />
 
-      {/* Loading Calibration System (Fix 08) */}
+      {/* Loading Calibration System */}
       <LoadingOverlay />
 
       {/* 2D HUD Navigation and Narrative Telemetry */}
@@ -53,3 +60,4 @@ export default function Home() {
     </main>
   );
 }
+

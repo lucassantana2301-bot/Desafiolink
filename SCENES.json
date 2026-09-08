@@ -57,10 +57,10 @@
     "scrollRange": [0.65, 0.88],
     "title": "ARE WE STILL DIFFERENT?",
     "subtitle": "NEXUS // SYNAPTIC MATRIX",
-    "description": "A câmera penetra o horizonte de eventos do núcleo. Imersão completa dentro de uma matriz neural 3D de sinapses.",
-    "cameraPosition": [0.0, 0.0, -2.5],
-    "cameraFov": 65,
-    "cameraTarget": [0.0, 0.0, -5.0],
+    "description": "Imersão no núcleo de consciência. A malha neural envolve o protagonista em conexão sináptica direta.",
+    "cameraPosition": [0.2, 0.05, 3.3],
+    "cameraFov": 40,
+    "cameraTarget": [0.0, 0.05, 0.0],
     "objectState": "inside-matrix",
     "shaderEffect": "volumetric-nodes"
   },
@@ -71,9 +71,9 @@
     "title": "NEXUS",
     "subtitle": "THE LINE BETWEEN HUMAN AND MACHINE IS DISAPPEARING.",
     "description": "Convergência final das partículas neurais na entidade híbrida. O estado de fusão entre biologia e inteligência sintética.",
-    "cameraPosition": [0.0, 0.0, 5.2],
-    "cameraFov": 45,
-    "cameraTarget": [0.0, 0.0, 0.0],
+    "cameraPosition": [0.0, 0.05, 2.75],
+    "cameraFov": 38,
+    "cameraTarget": [0.0, 0.05, 0.0],
     "objectState": "hybrid-reborn",
     "shaderEffect": "monochrome-glow"
   }
